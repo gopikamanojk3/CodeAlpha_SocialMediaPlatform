@@ -1,0 +1,42 @@
+{% extends 'social_app/base.html' %}
+{% block title %}Post - ConnectHub{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="flex gap-2 items-center mb-3">
+        <div class="avatar">{{ post.author.username|first|upper }}</div>
+        <div>
+            <a href="/profile/{{ post.author.username }}/" class="user-link">{{ post.author.username }}</a>
+            <div class="text-muted">{{ post.created_at|timesince }} ago</div>
+        </div>
+    </div>
+    <p style="font-size:16px;line-height:1.6;">{{ post.content }}</p>
+    {% if post.image %}<img src="{{ post.image.url }}" class="post-image">{% endif %}
+    <div class="flex gap-3 mt-3" style="border-top:1px solid #f0f2f5;padding-top:10px;">
+        <span style="color:#65676b;font-size:14px;">❤️ {{ post.get_likes_count }} Likes</span>
+        <span style="color:#65676b;font-size:14px;">💬 {{ comments.count }} Comments</span>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="font-size:16px;margin-bottom:12px;">Comments</h3>
+    <form method="post" action="/post/{{ post.id }}/comment/" class="flex gap-2 mb-3">
+        {% csrf_token %}
+        <input type="text" name="content" class="form-input" placeholder="Write a comment..." required>
+        <button type="submit" class="btn btn-primary btn-sm">Post</button>
+    </form>
+    {% for comment in comments %}
+    <div class="comment-item">
+        <div class="flex gap-2 items-center">
+            <div class="avatar" style="width:30px;height:30px;font-size:13px;">{{ comment.author.username|first|upper }}</div>
+            <div>
+                <a href="/profile/{{ comment.author.username }}/" class="user-link" style="font-size:14px;">{{ comment.author.username }}</a>
+                <span class="text-muted"> · {{ comment.created_at|timesince }} ago</span>
+                <p style="font-size:14px;margin-top:2px;">{{ comment.content }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">No comments yet. Be the first!</p>
+    {% endfor %}
+</div>
+{% endblock %}

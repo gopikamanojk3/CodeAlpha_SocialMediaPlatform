@@ -1,0 +1,73 @@
+{% extends 'social_app/base.html' %}
+{% block title %}Home - ConnectHub{% endblock %}
+{% block content %}
+<!-- Create Post -->
+<div class="card">
+    <form method="post" action="/post/create/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="flex gap-3 items-center mb-2">
+            <div class="avatar">{{ user.username|first|upper }}</div>
+            <textarea name="content" class="form-input" rows="2" placeholder="What's on your mind, {{ user.first_name|default:user.username }}?" style="resize:none;"></textarea>
+        </div>
+        <div class="flex justify-between items-center mt-2">
+            <label style="cursor:pointer;color:#65676b;font-size:14px;">📷 Photo <input type="file" name="image" accept="image/*" style="display:none;"></label>
+            <button type="submit" class="btn btn-primary btn-sm">Post</button>
+        </div>
+    </form>
+</div>
+
+<!-- Posts Feed -->
+{% for post in posts %}
+<div class="card" id="post-{{ post.id }}">
+    <div class="flex justify-between items-center">
+        <div class="flex gap-2 items-center">
+            <div class="avatar">{{ post.author.username|first|upper }}</div>
+            <div>
+                <a href="/profile/{{ post.author.username }}/" class="user-link">{{ post.author.get_full_name|default:post.author.username }}</a>
+                <div class="text-muted">@{{ post.author.username }} · {{ post.created_at|timesince }} ago</div>
+            </div>
+        </div>
+        {% if post.author == user %}
+        <form method="post" action="/post/{{ post.id }}/delete/" onsubmit="return confirm('Delete post?')">
+            {% csrf_token %}<button class="btn btn-danger btn-sm">Delete</button>
+        </form>
+        {% endif %}
+    </div>
+    <p style="margin-top:12px;font-size:15px;line-height:1.5;">{{ post.content }}</p>
+    {% if post.image %}<img src="{{ post.image.url }}" class="post-image" alt="Post image">{% endif %}
+    <div class="flex gap-3 items-center mt-3" style="border-top:1px solid #f0f2f5;padding-top:8px;">
+        <button class="like-btn {% if user in post.likes.all %}liked{% endif %}" onclick="likePost({{ post.id }}, this)">
+            ❤️ <span id="like-count-{{ post.id }}">{{ post.get_likes_count }}</span> Likes
+        </button>
+        <a href="/post/{{ post.id }}/" style="text-decoration:none;color:#65676b;font-size:14px;font-weight:600;">
+            💬 {{ post.comments.count }} Comments
+        </a>
+    </div>
+    <!-- Quick comment -->
+    <form method="post" action="/post/{{ post.id }}/comment/" class="flex gap-2 mt-2">
+        {% csrf_token %}
+        <input type="text" name="content" class="form-input" placeholder="Comment..." style="font-size:13px;" required>
+        <button type="submit" class="btn btn-secondary btn-sm">Send</button>
+    </form>
+</div>
+{% empty %}
+<div class="card" style="text-align:center;color:#65676b;padding:40px;">
+    <p style="font-size:20px;">👋 Welcome to ConnectHub!</p>
+    <p class="mt-2">Follow people to see their posts, or <a href="/explore/">explore</a> to find users.</p>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function likePost(postId, btn) {
+    fetch(`/post/${postId}/like/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': '{{ csrf_token }}', 'X-Requested-With': 'XMLHttpRequest'}
+    }).then(r => r.json()).then(data => {
+        btn.classList.toggle('liked', data.liked);
+        document.getElementById(`like-count-${postId}`).textContent = data.count;
+    });
+}
+</script>
+{% endblock %}

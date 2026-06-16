@@ -1,0 +1,45 @@
+{% extends 'social_app/base.html' %}
+{% block title %}Explore - ConnectHub{% endblock %}
+{% block content %}
+<div class="card">
+    <form method="get" class="flex gap-2">
+        <input type="text" name="q" class="form-input" placeholder="Search users or posts..." value="{{ query }}">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+{% if query %}
+{% if users %}
+<div class="card">
+    <h3 style="margin-bottom:12px;">👤 Users</h3>
+    {% for u in users %}
+    <div class="flex justify-between items-center" style="padding:8px 0;border-bottom:1px solid #f0f2f5;">
+        <div class="flex gap-2 items-center">
+            <div class="avatar">{{ u.username|first|upper }}</div>
+            <a href="/profile/{{ u.username }}/" class="user-link">{{ u.username }}</a>
+        </div>
+        <a href="/profile/{{ u.username }}/follow/" class="btn btn-primary btn-sm">Follow</a>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<h3 style="margin-bottom:8px;">📝 Posts</h3>
+{% for post in posts %}
+<div class="card">
+    <div class="flex gap-2 items-center mb-2">
+        <div class="avatar">{{ post.author.username|first|upper }}</div>
+        <a href="/profile/{{ post.author.username }}/" class="user-link">{{ post.author.username }}</a>
+    </div>
+    <p>{{ post.content }}</p>
+    <a href="/post/{{ post.id }}/" class="text-muted mt-1" style="display:block;font-size:13px;">View post →</a>
+</div>
+{% empty %}
+<div class="card" style="text-align:center;color:#65676b;">No posts found for "{{ query }}"</div>
+{% endfor %}
+{% else %}
+<div class="card" style="text-align:center;color:#65676b;padding:30px;">
+    <p style="font-size:18px;">🔍 Search for users or posts</p>
+</div>
+{% endif %}
+{% endblock %}

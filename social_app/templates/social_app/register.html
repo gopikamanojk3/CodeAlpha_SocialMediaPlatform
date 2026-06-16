@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ConnectHub</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .auth-card { background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.12); width: 100%; max-width: 420px; }
+        .brand { font-size: 28px; font-weight: 800; color: #1877f2; text-align: center; margin-bottom: 6px; }
+        .tagline { text-align: center; color: #65676b; margin-bottom: 20px; font-size: 14px; }
+        .form-row { margin-bottom: 12px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #606770; margin-bottom: 4px; }
+        .form-input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; }
+        .form-input:focus { border-color: #1877f2; }
+        .error-list { color: #c0392b; font-size: 13px; margin-top: 4px; list-style: none; }
+        .btn-primary { width: 100%; padding: 12px; background: #42b72a; color: #fff; border: none; border-radius: 8px; font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+        .btn-primary:hover { background: #36a420; }
+        .divider { border: none; border-top: 1px solid #e4e6eb; margin: 20px 0; }
+        .text-center { text-align: center; }
+        .link { color: #1877f2; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+<div class="auth-card">
+    <div class="brand">ConnectHub</div>
+    <div class="tagline">It's quick and easy to sign up.</div>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-row">
+            <label>{{ field.label }}</label>
+            <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" class="form-input"
+                   value="{{ field.value|default:'' }}" {% if field.field.required %}required{% endif %}>
+            {% if field.errors %}<ul class="error-list">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-primary">Create Account</button>
+    </form>
+    <hr class="divider">
+    <div class="text-center"><a href="/login/" class="link">Already have an account? Log in</a></div>
+</div>
+</body>
+</html>

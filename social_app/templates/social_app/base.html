@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ConnectHub{% endblock %}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #1c1e21; }
+        .navbar { background: #fff; padding: 0 20px; height: 56px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,.1); position: sticky; top: 0; z-index: 100; }
+        .navbar .brand { font-size: 24px; font-weight: 800; color: #1877f2; text-decoration: none; }
+        .navbar .nav-links { display: flex; gap: 16px; align-items: center; }
+        .navbar .nav-links a { text-decoration: none; color: #606770; font-weight: 500; padding: 6px 12px; border-radius: 6px; transition: background .2s; }
+        .navbar .nav-links a:hover { background: #f0f2f5; color: #1877f2; }
+        .container { max-width: 680px; margin: 24px auto; padding: 0 16px; }
+        .wide-container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+        .btn { display: inline-block; padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; transition: all .2s; }
+        .btn-primary { background: #1877f2; color: #fff; }
+        .btn-primary:hover { background: #166fe5; }
+        .btn-secondary { background: #e4e6eb; color: #1c1e21; }
+        .btn-secondary:hover { background: #ccd0d5; }
+        .btn-danger { background: #fa3e3e; color: #fff; }
+        .btn-danger:hover { background: #e03535; }
+        .btn-sm { padding: 5px 12px; font-size: 13px; }
+        .form-input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; transition: border .2s; }
+        .form-input:focus { border-color: #1877f2; }
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; font-size: 14px; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-error { background: #f8d7da; color: #721c24; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #1877f2; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+        .avatar-lg { width: 80px; height: 80px; font-size: 30px; }
+        .user-link { text-decoration: none; color: #1c1e21; font-weight: 600; }
+        .user-link:hover { text-decoration: underline; }
+        .text-muted { color: #65676b; font-size: 13px; }
+        .flex { display: flex; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .mt-1 { margin-top: 4px; }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 12px; }
+        .mb-2 { margin-bottom: 8px; }
+        .post-image { width: 100%; border-radius: 8px; margin-top: 12px; max-height: 400px; object-fit: cover; }
+        .like-btn { background: none; border: none; cursor: pointer; color: #65676b; font-size: 14px; font-weight: 600; padding: 6px 10px; border-radius: 6px; display: flex; align-items: center; gap: 5px; transition: all .2s; }
+        .like-btn:hover, .like-btn.liked { color: #1877f2; background: #e7f3ff; }
+        .comment-item { padding: 8px 0; border-bottom: 1px solid #f0f2f5; }
+        .messages { list-style: none; }
+        .tag { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; background: #e4e6eb; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+{% if user.is_authenticated %}
+<nav class="navbar">
+    <a href="/" class="brand">ConnectHub</a>
+    <div class="nav-links">
+        <a href="/">🏠 Home</a>
+        <a href="/explore/">🔍 Explore</a>
+        <a href="/profile/{{ user.username }}/">👤 {{ user.username }}</a>
+        <a href="/edit-profile/">✏️ Edit Profile</a>
+        <a href="/logout/">🚪 Logout</a>
+    </div>
+</nav>
+{% endif %}
+
+<div class="{% block container_class %}container{% endblock %}">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+</div>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
